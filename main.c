@@ -17,9 +17,9 @@ void printDirInfo(char * dirname);
 
 int main() {
 
-  char * directory = "../";
+  char * directory = "/";
   printf("\nOpening directory %s\n", directory);
-  printDirInfo("../");
+  printDirInfo(directory);
 
   return 0;
 }
