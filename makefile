@@ -1,11 +1,11 @@
 all: main.o
-	gcc -o rand main.o
+	gcc -o dirtest main.o
 
-dwstring.o: main.c
+main.o: main.c
 	gcc -c main.c
 
 run:
-	./rand
+	./dirtest
 
 clean:
 	rm *.o
