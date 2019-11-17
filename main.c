@@ -13,19 +13,33 @@ int printStatus(int status);
 
 DIR * printDirStatus(DIR * status);
 
-void printDirInfo(char * dirname);
+int printDirInfo(char * dirname);
 
 int main() {
 
   char * directory = "/";
   printf("\nOpening directory %s\n", directory);
-  printDirInfo(directory);
+
+  //add pwd to front of absolute path
+  char pwd[1000], abs_dir[1000];
+  getcwd(pwd, sizeof(pwd));
+  if (pwd==NULL) printf("Errno %d: %s\n", errno, strerror(errno));
+
+  //combine pwd and specified directory path
+  strcpy(abs_dir, directory);
+  strcat(pwd, abs_dir);
+
+  printf("Absolute path: %s\n", pwd);
+  int bytes = printDirInfo(pwd);
+  printf("\nTotal diretory size: %d bytes\n", bytes);
 
   return 0;
 }
 
-  void printDirInfo(char * dirname){
-    DIR *dir = opendir(dirname);
+//returns total bytes of directory
+  int printDirInfo(char * dirname){
+    DIR * dir = malloc(sizeof(DIR));
+    dir = opendir(dirname);
     printDirStatus(dir);
     printf("\n");
 
@@ -34,7 +48,9 @@ int main() {
     struct stat * info; //var to store status of each file
     char * filepath; //var to store path of each file
     //make names into arrays to use with strcpy
-    char dpath[50], fpath[50];
+    char dpath[500], fpath[50];
+
+    int totalmem = 0; //var to store total memory of files in dir
 
     while (cur != NULL) {
       //if entry is directory:
@@ -48,26 +64,29 @@ int main() {
         strcpy(dpath, dirname); //re-declare dpath each time because it has been altered
         strcpy(fpath, cur->d_name);
 
-        //filepath = strcat(dirname, cur->d_name);
-        //printf("\tdirname: %s\n", dpath);
-        //printf("\tfilename: %s\n", fpath);
         strcat(dpath, fpath);
+        // printf("good\n");
+        // printf("fpath: %s\n", cwd);
         //printf("\tfilepath: %s\n", filepath);
         //char * pathname = filepath;
 
-        printf("%s | ", dpath);
+        printf("%s | ", fpath);
         //get file info
         int status = stat(dpath, info);
         //only print info if file works
         if (status != -1) {
           //printf("success!\n");
-          printf("%d KB\n", info->st_size);
+          totalmem += info->st_size;
+          printf("%d B\n", info->st_size);
         } else printStatus(status);
 
         free(info);
       }
       cur = readdir(dir);
     }
+
+    free(dir);
+    return totalmem;
 
   }
 
