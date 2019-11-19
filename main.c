@@ -29,10 +29,14 @@ int main(int argc, char *argv[]) {
     printf("Please re-run and enter a directory input!\n");
     return 0;
   }
+  //add slash to end of dir_input if there isn't one already
+  if (strcmp(dir_input + strlen(dir_input) - 1, "/") != 0) {
+    strcat(dir_input, "/");
+  }
   printf("Opening directory: %s\n", dir_input);
 
   int bytes = printDirInfo(dir_input);
-  if (bytes == -1) return 0; 
+  if (bytes == -1) return 0;
   printf("\nTotal diretory size: %d bytes\n", bytes);
 
 
@@ -54,7 +58,7 @@ int main(int argc, char *argv[]) {
 
 //returns total bytes of directory
   int printDirInfo(char * dirname){
-    DIR * dir = malloc(sizeof(DIR));
+    DIR * dir = malloc(sizeof(DIR *));
     dir = opendir(dirname);
     if (printDirStatus(dir) == NULL) {
       printf("Please enter a valid directory!\n");
@@ -88,7 +92,7 @@ int main(int argc, char *argv[]) {
         // printf("fpath: %s\n", cwd);
         //printf("\tfilepath: %s\n", filepath);
         //char * pathname = filepath;
-
+        //printf("%s\n",dpath);
         printf("%s | ", fpath);
         //get file info
         int status = stat(dpath, info);
