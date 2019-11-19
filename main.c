@@ -15,23 +15,39 @@ DIR * printDirStatus(DIR * status);
 
 int printDirInfo(char * dirname);
 
-int main() {
+char *  getpwd();
 
-  char * directory = "/";
-  printf("\nOpening directory %s\n", directory);
+int main(int argc, char *argv[]) {
 
-  //add pwd to front of absolute path
-  char pwd[1000], abs_dir[1000];
-  getcwd(pwd, sizeof(pwd));
-  if (pwd==NULL) printf("Errno %d: %s\n", errno, strerror(errno));
+  // char * directory = "/";
+  // printf("\nOpening directory %s\n", directory);
 
-  //combine pwd and specified directory path
-  strcpy(abs_dir, directory);
-  strcat(pwd, abs_dir);
+  fgets(argv,2, stdin);
+  char * dir_input = argv[1];
+  //do not work if user doesn't enter input
+  if (dir_input == NULL) {
+    printf("Please re-run and enter a directory input!\n");
+    return 0;
+  }
+  printf("Opening directory: %s\n", dir_input);
 
-  printf("Absolute path: %s\n", pwd);
-  int bytes = printDirInfo(pwd);
+  int bytes = printDirInfo(dir_input);
+  if (bytes == -1) return 0; 
   printf("\nTotal diretory size: %d bytes\n", bytes);
+
+
+
+  // //add pwd to front of absolute path
+  // char pwd[1000], abs_dir[1000];
+  // pwd = getpwd();
+  //
+  // //combine pwd and specified directory path
+  // strcpy(abs_dir, directory);
+  // strcat(pwd, abs_dir);
+
+  //printf("Absolute path: %s\n", pwd);
+  //int bytes = printDirInfo(pwd);
+  //printf("\nTotal diretory size: %d bytes\n", bytes);
 
   return 0;
 }
@@ -40,7 +56,10 @@ int main() {
   int printDirInfo(char * dirname){
     DIR * dir = malloc(sizeof(DIR));
     dir = opendir(dirname);
-    printDirStatus(dir);
+    if (printDirStatus(dir) == NULL) {
+      printf("Please enter a valid directory!\n");
+      return -1;
+    }
     printf("\n");
 
     struct dirent * cur = readdir(dir);
@@ -88,6 +107,14 @@ int main() {
     free(dir);
     return totalmem;
 
+  }
+
+  char* getpwd() {
+    char pwd[1000];
+    getcwd(pwd, sizeof(pwd));
+    if (pwd==NULL) printf("Errno %d: %s\n", errno, strerror(errno));
+    char * out = pwd;
+    return out;
   }
 
   int printStatus(int status) {
